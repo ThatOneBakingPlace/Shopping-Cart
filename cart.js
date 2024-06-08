@@ -84,3 +84,60 @@ var cols = [
     dataField: 'discountThreshold',
   },
 ];
+var layout = new GC.DataViews.GridLayout({
+  rowHeight: 127,
+  showRowHeader: false,
+  allowColumnReorder: false,
+  allowColumnResize: false,
+  allowSwipe: true,
+  colHeaderHeight: 24,
+  rowTemplate: '#rowTmpl',
+});
+var dataView = new GC.DataViews.DataView(document.getElementById('grid'), data, cols, layout);
+refreshTotalPrice(); // focus data.view by default
+
+document.getElementById('grid').focus();
+
+function refreshTotalPrice() {
+  var formulaStringTotal = 'if(sum([productSubtotal]) > 199.99, sum([productSubtotal]) * 0.6, sum([productSubtotal]))';
+  var formulaStringPrice = 'sum([productSubtotal])';
+  var formulaStringQuantity = 'sum([productQuantity])';
+  var total = dataView.data.evaluate(formulaStringTotal);
+  var price = dataView.data.evaluate(formulaStringPrice);
+  var saving = price - total;
+  var quantity = dataView.data.evaluate(formulaStringQuantity);
+  var totalPriceSpan = document.getElementById('total');
+  var savingPercentage = price === 0 ? 0 : ((saving / price) * 100).toFixed(0);
+  totalPriceSpan.innerHTML = '\n<div>\n    <span style="font-size: 16px; font-weight: bold">\n      <span>'
+    .concat(locale.total, ' (')
+    .concat(quantity, ' ')
+    .concat(locale.items, '): </span>\n      <span style="color:green">$')
+    .concat(total.toFixed(2), '</span>\n    </span>\n</div>\n<div>\n    <span>')
+    .concat(locale.totalSavings, ': </span>\n    <span style="color:green">$')
+    .concat(saving.toFixed(2), '</span>\n    ')
+    .concat(price === 0 ? '' : '<span>('.concat(savingPercentage, '%)</span>'), '\n</div>');
+}
+
+function deleteRow(args) {
+  var answer = confirm('Are you sure to delete row?');
+
+  if (answer) {
+    dataView.data.removeDataItems(args.hitInfo.row);
+    dataView.invalidate();
+    refreshTotalPrice();
+  }
+
+  args.closeActionColumnPanel();
+}
+
+window.refreshQuantity = function refreshQuantity(input) {
+  var row = $(input).closest('.gc-row');
+  var rowIndex = row[0].id.substr(''.concat(dataView.uid, '-r').length);
+  var rowData = data[rowIndex];
+
+  if (rowData) {
+    rowData.quantity = input.value ? parseInt(input.value, 10) : 0;
+    dataView.data.reCalculate();
+    refreshTotalPrice();
+  }
+};
