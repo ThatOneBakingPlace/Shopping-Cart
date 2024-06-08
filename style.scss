@@ -1,0 +1,56 @@
+$primary-color: #333;
+$secondary-color: #f4f4f4;
+$button-bg: #008cba;
+$button-color: white;
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: $secondary-color;
+    color: $primary-color;
+}
+
+.container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1, h2 {
+    text-align: center;
+}
+
+.product-list, .cart {
+    margin: 20px 0;
+}
+
+.product, .cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid $secondary-color;
+}
+
+button.add-to-cart {
+    background-color: $button-bg;
+    color: $button-color;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+button.add-to-cart:hover {
+    background-color: darken($button-bg, 10%);
+}
+
+.cart-items {
+    list-style-type: none;
+    padding: 0;
+}
+
+.total {
+    text-align: right;
+}
